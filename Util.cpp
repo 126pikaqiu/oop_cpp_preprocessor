@@ -7,15 +7,16 @@
 #include <iostream>
 
 //原地修改字符串，传入的是左值引用
-void trim(string &s) {
+string trim(string &s) {
     if (s.empty()) {
-        return;
+        return s;
     }
     s.erase(0, s.find_first_not_of(" "));
     s.erase(s.find_last_not_of(" ") + 1);
+    return s;
 }
 
-bool startWith(string target, string line){
+bool start_with(string target, string line){
     trim(line);
     string pattern("^\\b" + target + "\\b");
     regex regex1(pattern);
@@ -23,5 +24,19 @@ bool startWith(string target, string line){
     cout << regex_search(line, regex1);
 #endif
     return regex_search(line, regex1);
+}
+
+void split_string(string &s, vector<string> &v, string &c) {   //将字符串按指定字符集分割
+    string::size_type pos1, pos2;
+    pos2 = s.find_first_of(c);
+    pos1 = 0;
+    while (string::npos != pos2) {
+        if ((pos2 - pos1) != 0u)
+            v.push_back(s.substr(pos1, pos2 - pos1));
+        pos1 = pos2 + 1;
+        pos2 = s.find_first_of(c, pos1);
+    }
+    if (pos1 != s.length())
+        v.push_back(s.substr(pos1));
 }
 

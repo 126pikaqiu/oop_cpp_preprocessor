@@ -6,12 +6,13 @@
 #define OOP_CPP_PREPROCESSOR_UTIL_H
 
 #include <string>
+#include <vector>
 
 using namespace std;
 
-void trim(string &s);
-bool startWith(string target, string line);
-
+void split_string(string &string1, vector<string> &container, string &signs);
+string trim(string &s);
+bool start_with(string target, string line);
 
 
 

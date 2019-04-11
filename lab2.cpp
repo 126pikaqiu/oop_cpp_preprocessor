@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include "Preprocessor.h"
 using namespace std;
 
 string get_unprocessed_code(int number);
@@ -27,6 +27,7 @@ void run_test(int test_case_number) {
      * TODO: Take raw_code as your input, and output your processed code.
      * TODO: You'd better create new classes to handle your logic and use here only as an entrance.
      * */
+    Preprocessor preprocessor(raw_code);
     string processed_code = raw_code;
     put_processed_code(test_case_number, processed_code);
 }
