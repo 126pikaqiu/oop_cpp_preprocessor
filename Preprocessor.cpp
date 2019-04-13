@@ -29,7 +29,7 @@ int Preprocessor::which_cmd(const string &line) {
             return i;
         }
     }
-    return 0;//0表示不需要处理
+    return 0;//0表示不需要处理，有特殊用处
 }
 
 Preprocessor::Preprocessor(string code) {
@@ -69,24 +69,30 @@ string Preprocessor::replace_define(string line) {
         string key = it->first;
         Node node = it->second;
         if (!node.get_argu().empty()) {
-//            unsigned long pos1;
-//            if ((pos1 = tmp.find(key)) != string::npos) {
-//                unsigned long pos2 = tmp.find_first_of("(", pos1);
-//                unsigned long pos3 = tmp.find_first_of(")", pos2);
-//                string t = tmp.substr(pos2, pos3);
-//                string arg = tmp.substr(pos2 + 1, pos3 - pos2 - 1);
-//                string tmpArg = node.get_argu();
-//                string value = node.get_value();
-//                regex regex1("\"#" + tmpArg);
-//                value = regex_replace(value, regex1, arg + "\"");
-//                regex regex2(tmpArg);
-//                value = regex_replace(value, regex2, arg);
-//                string pattern(key + "(" + arg + ")");
-//                unsigned long index = tmp.find(key);
-//                unsigned long index2 = tmp.find(")", index);
-//                tmp.replace(index, index2 - index + 1, "");
-//                tmp.insert(index, value);
-//            }
+            int pos1;
+            if ((pos1 = tmp.find(key)) != string::npos) {
+                int pos2 = tmp.find_first_of('(', pos1);
+                int pos3 = tmp.find_first_of(')', pos2);
+                string arg = tmp.substr(pos2 + 1, pos3 - pos2 - 1);
+                string tmpArg = node.get_argu();
+                string value = node.get_value();
+
+                regex regex1("\"#" + tmpArg);
+                value = regex_replace(value, regex1, arg + "\"");
+
+                regex regex2(tmpArg);
+                value = regex_replace(value, regex2, arg);
+                if(value.find("##") != string::npos){
+                    int pos = value.find("##");
+                    string start = value.substr(0,pos);
+                    string end = value.substr(pos + 2);
+                    value = trim(start) + trim(end);
+                }
+                int index = tmp.find(key);
+                int index2 = tmp.find(')', index);
+                tmp.replace(index, index2 - index + 1, "");
+                tmp.insert(index, value);
+            }
         } else if(!node.get_value().empty()){
             string pattern{"\\b" + key + "\\b"};
             regex re(pattern);
@@ -112,9 +118,18 @@ void Preprocessor::handle_define(string line) {
         defines.insert(make_pair(strings[1],node));
 
     }else{
-//        vector<string> strings;
-//        split_string(line,strings,sign);
-//        //todo
+        string sign1("()");
+        vector<string> strings;
+        split_string(line,strings,sign1);
+        string value;
+        value = strings[2];
+        if(strings.size() >= 4){
+            value = strings[3];
+        }
+        Node node(value,trim(strings[1]));
+        vector<string> strings1;
+        split_string(strings[0],strings1,sign);
+        defines.insert(make_pair(strings1[1],node));
     }
 }
 
@@ -155,6 +170,11 @@ void Preprocessor::handle_ifndef(string line) {
     status.push(defines.count(strings[1]) == 0);
 }
 
+/**
+ * checking status is necessary.
+ * O
+ * @param line
+ */
 void Preprocessor::handle_undef(string line) {
     if(!status.top()){
         return;
@@ -164,6 +184,12 @@ void Preprocessor::handle_undef(string line) {
     defines.erase(strings[1]);
 }
 
+/**
+ * check whether the line could be included.
+ * If so, just replace some defined words.
+ * Otherwise, just ignore it.
+ * @param line raw text to be handled
+ */
 void Preprocessor::handle_common(string line) {
     if(!status.top()){
         return;
@@ -171,11 +197,24 @@ void Preprocessor::handle_common(string line) {
     new_code.append(replace_define(line)).push_back('\n');
 }
 
+/**
+ * According to the type of line, it will choose a proper handle method.
+ * @param line raw text to be handled
+ * @param g_handle_methods the structure containing the handle method
+ */
 void Preprocessor::handle(string line, const struct handle_struct g_handle_methods[]) {
     handle_method fun = g_handle_methods[which_cmd(line)].pFun;
     (this->*fun)(line);
 }
 
+/**
+ * the main interface of the class.
+ * It divides the text into raws to handle.
+ * Using function pointer rather than switch-case
+ * statements can improve the performance of program.
+ *
+ * @return the handled text.
+ */
 string Preprocessor::preprocessor() {
     const struct handle_struct g_handle_methods[9] =
             {{0,(handle_method)(&Preprocessor::handle_common)},{1,(handle_method)(&Preprocessor::handle_include)},{2,(handle_method)(&Preprocessor::handle_define)}
@@ -183,7 +222,7 @@ string Preprocessor::preprocessor() {
                     ,{6,(handle_method)(&Preprocessor::handle_ifndef)},{7,(handle_method)(&Preprocessor::handle_undef)},{8,(handle_method)(&Preprocessor::handle_else)}};
     vector<string> lines;
     string sign = "\n";
-    split_string(pre_code, lines, sign); //将源文件切割成行
+    split_string(pre_code, lines, sign);
     for (auto line :lines) {
         handle(line,g_handle_methods);
     }
