@@ -17,8 +17,8 @@ private:
     string argu;
 public:
     Node(string value,string argu);
-    string getvalue();
-    string getArgu();
+    string get_value();
+    string get_argu();
 };
 
 

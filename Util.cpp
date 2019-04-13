@@ -17,12 +17,13 @@ string trim(string &s) {
 }
 
 bool start_with(string target, string line){
+    if (target == "#") {
+        regex regex2("^" + target);
+        return regex_search(line, regex2);
+    }
     trim(line);
     string pattern("^\\b" + target + "\\b");
     regex regex1(pattern);
-#ifdef DEBUG
-    cout << regex_search(line, regex1);
-#endif
     return regex_search(line, regex1);
 }
 

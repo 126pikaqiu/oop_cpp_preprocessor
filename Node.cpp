@@ -4,34 +4,16 @@
 
 #include "Node.h"
 
-string Node::getArgu() {
+string Node::get_argu() {
     return argu;
 }
 
-string Node::getKey() {
-    return key;
-}
-
-string Node::getvalue() {
+string Node::get_value() {
     return value;
 }
-Node:: Node(string key,string value,string argu,bool isValid){
-    this->key = key;
-    this->value = value;
-    this->argu = argu;
-    this->isValid = isValid;
-}
-Node::Node(string key,string value,string argu){
-    this->key = key;
-    this->value = value;
-    this->argu = argu;
-    this->isValid = true;
+
+Node::Node(string value,string argu){
+    this->value = move(value);
+    this->argu = move(argu);
 }
 
-bool Node::getIsValid() {
-    return isValid;
-}
-
-void Node::setIsValid(bool isValid) {
-    this->isValid = isValid;
-}
