@@ -14,7 +14,7 @@ void put_processed_code(int number, string code);
 void run_test(int test_case_number);
 
 int main() {
-    for (int test_case_number = 2; test_case_number <= 2; test_case_number++) {
+    for (int test_case_number = 1; test_case_number <= 2; test_case_number++) {
         run_test(test_case_number);
     }
     return 0;

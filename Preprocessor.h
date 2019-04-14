@@ -25,7 +25,7 @@ private:
     string sign;
     int which_cmd(const string &line);
     void handle_include(string line);
-    string include_file(string path);
+    static string include_file(const string& path);
     string replace_define(string line);
     map<string,Node> defines;
     void handle_common(string line);
@@ -36,7 +36,7 @@ private:
     void handle_ifdef(string line);
     void handle_ifndef(string line);
     void handle_undef(string line);
-    void handle(string line, const struct handle_struct g_handle_methods[]);
+    void handle(const string& line, const struct handle_struct g_handle_methods[]);
     stack<bool> status; //be used to cope with nesting if-else statements.
 public:
     explicit Preprocessor(string code);//it means you can not use Preprocessor preprocessor = oldcodes,where oldcodes'type is string.

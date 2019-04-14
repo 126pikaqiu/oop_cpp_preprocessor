@@ -12,7 +12,7 @@ using namespace std;
 
 void split_string(string &string1, vector<string> &container, string &signs);
 string trim(string &s);
-bool start_with(string target, string line);
+bool start_with(const string& target, string line);
 
 
 

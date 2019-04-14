@@ -11,12 +11,12 @@ string trim(string &s) {
     if (s.empty()) {
         return s;
     }
-    s.erase(0, s.find_first_not_of(" "));
-    s.erase(s.find_last_not_of(" ") + 1);
+    s.erase(0, s.find_first_not_of(' '));
+    s.erase(s.find_last_not_of(' ') + 1);
     return s;
 }
 
-bool start_with(string target, string line){
+bool start_with(const string& target, string line){
     if (target == "#") {
         regex regex2("^" + target);
         return regex_search(line, regex2);
